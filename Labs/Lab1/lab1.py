@@ -8,9 +8,8 @@ x
 y
 
 x.size # Verifying size of arrays x and y to be the same
-11
-y.size
-11
+y.size # Removed unused code and fixed structure
+
 x[1:4]
 
 print('The first three entries of x are', x[:3])
