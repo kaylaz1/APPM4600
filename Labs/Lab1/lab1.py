@@ -7,7 +7,7 @@ x
 
 y
 
-x.size
+x.size # Verifying size of arrays x and y to be the same
 11
 y.size
 11
