@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-x = np.linspace(0, 10, 11)
+x = np.linspace(0, 10, 11) #initializing variables x and y to have the same space and values
 y = np.arange(0, 11, 1)
 x
 
