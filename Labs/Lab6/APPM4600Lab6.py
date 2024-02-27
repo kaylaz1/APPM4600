@@ -5,16 +5,6 @@ import time
 from numpy.linalg import inv 
 from numpy.linalg import norm 
 
-
-# def evalF(x): 
-
-#     F = np.zeros(3)
-    
-#     F[0] = 3*x[0]-math.cos(x[1]*x[2])-1/2
-#     F[1] = x[0]-81*(x[1]+0.1)**2+math.sin(x[2])+1.06
-#     F[2] = np.exp(-x[0]*x[1])+20*x[2]+(10*math.pi-3)/3
-#     return F
-
 def evalF(x):
     F = np.zeros(2)
 
@@ -22,17 +12,25 @@ def evalF(x):
     F[1] = x[0] + x[1] - np.sin(x[0] - x[1])
 
     return F
-    
-# def evalJ(x): 
-#     J = np.array([[3.0, x[2]*math.sin(x[1]*x[2]), x[1]*math.sin(x[1]*x[2])], 
-#         [2.*x[0], -162.*(x[1]+0.1), math.cos(x[2])], 
-#         [-x[1]*np.exp(-x[0]*x[1]), -x[0]*np.exp(-x[0]*x[1]), 20]])
-#     return J
 
 def evalJ(x):
     J = np.array([[8*x[0], 2*x[1]], [1 - np.cos(x[0] - x[1]), 1 + np.cos(x[0] - x[1])]])
 
     return J
+
+# def forward_difference(f, s, h):
+#     return (f(s+h) - f(s))/h
+
+# def evalJ(x, h):
+#     result = []
+#     for i in x:
+#         result.append([])
+#     for i in range(len(result)):
+#         for j in range(len(x)):
+#             result[i].append(forward_difference(evalF(x)[i], x[j], h))
+
+#     J = np.array(result)
+#     return J
 
 def Newton(x0,tol,Nmax):
     ''' inputs: x0 = initial guess, tol = tolerance, Nmax = max its'''
@@ -56,12 +54,14 @@ def Newton(x0,tol,Nmax):
     ier = 1
     return[xstar,ier,its]
            
+# def LazyNewton(x0,tol,Nmax,h):
 def LazyNewton(x0,tol,Nmax):
 
     ''' Lazy Newton = use only the inverse of the Jacobian for initial guess'''
     ''' inputs: x0 = initial guess, tol = tolerance, Nmax = max its'''
     ''' Outputs: xstar= approx root, ier = error message, its = num its'''
 
+    # J = evalJ(x0, h)
     J = evalJ(x0)
     Jinv = inv(J)
     for its in range(Nmax):
@@ -74,6 +74,7 @@ def LazyNewton(x0,tol,Nmax):
             ier =0
             return[xstar, ier,its]
         elif (abs(evalF(x1)) < abs(F)).all:
+            # Jinv = inv(evalJ(x1, h))
             Jinv = inv(evalJ(x1))
         x0 = x1
     
@@ -138,46 +139,14 @@ def Broyden(x0,tol,Nmax):
 x0 = np.array([1, 0])
 Nmax = 100
 tol = 10**-10
+h = h = 0.01*2.**(-np.arange(0, 10))
 
 t = time.time()
 for j in range(20):
+    # [xstar, ier, its] = LazyNewton(x0, tol, Nmax, h)
     [xstar, ier, its] = LazyNewton(x0, tol, Nmax)
 elapsed = time.time() - t
 print(xstar)
 print('Lazy Newton: the error message reads:',ier)
 print('Lazy Newton: took this many seconds:',elapsed/20)
 print('Lazy Newton: number of iterations is:',its)
-
-# use routines
-# x0 = np.array([0.1, 0.1, -0.1])
-
-# Nmax = 100
-# tol = 1e-10
-
-# t = time.time()
-# for j in range(20):
-#   [xstar,ier,its] =  Newton(x0,tol,Nmax)
-# elapsed = time.time()-t
-# print(xstar)
-# print('Newton: the error message reads:',ier)
-# print('Newton: took this many seconds:',elapsed/20)
-# print('Netwon: number of iterations is:',its)
- 
-# t = time.time()
-# for j in range(20):
-#   [xstar,ier,its] =  LazyNewton(x0,tol,Nmax)
-# elapsed = time.time()-t
-# print(xstar)
-# print('Lazy Newton: the error message reads:',ier)
-# print('Lazy Newton: took this many seconds:',elapsed/20)
-# print('Lazy Newton: number of iterations is:',its)
- 
-# t = time.time()
-# for j in range(20):
-#   [xstar,ier,its] = Broyden(x0, tol,Nmax)     
-# elapsed = time.time()-t
-# print(xstar)
-# print('Broyden: the error message reads:',ier)
-# print('Broyden: took this many seconds:',elapsed/20)
-# print('Broyden: number of iterations is:',its)
-     
